@@ -5,6 +5,7 @@ import com.egg.estancias.entities.Casa;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SimpleTimeZone;
 
 public class CasaDAO extends DAO {
 
@@ -102,4 +103,75 @@ public class CasaDAO extends DAO {
         String sql = "DELETE FROM casas WHERE id_casa = " + idCasa + ";";
         insertarModificarEliminar(sql);
     };
+
+    // Buscar y listar las casas disponibles para el periodo comprendido entre el 1 de agosto de 2020 y el 31 de agosto de 2020 en Reino Unido.
+    public List<Casa> listarCasasDisponiblesReinoUnido() throws Exception {
+        String sql = String.format("""
+                SELECT *
+                FROM casas
+                WHERE pais = 'Reino Unido'
+                AND id_casa NOT IN (
+                    SELECT e.id_casa
+                    FROM estancias e
+                    WHERE ('2020-08-01' <= e.fecha_hasta AND '2020-08-31' >= e.fecha_desde)
+                );
+                """);
+
+        consultarDataBase(sql);
+        List<Casa> casas = new ArrayList<>();
+        while (resultSet.next()) {
+            casas.add(new Casa(
+                    resultSet.getInt("id_casa"),
+                    resultSet.getString("calle"),
+                    resultSet.getInt("numero"),
+                    resultSet.getString("codigo_postal"),
+                    resultSet.getString("ciudad"),
+                    resultSet.getString("pais"),
+                    resultSet.getDate("fecha_desde"),
+                    resultSet.getDate("fecha_hasta"),
+                    resultSet.getInt("tiempo_minimo"),
+                    resultSet.getInt("tiempo_maximo"),
+                    resultSet.getDouble("precio_habitacion"),
+                    resultSet.getString("tipo_vivienda")
+            ));
+        }
+        return casas;
+    }
+
+    // Consulta la BD para que te devuelva aquellas casas disponibles a partir de una fecha dada y un número de días específico.
+
+    public List<Casa> listarCasasDisponiblesPorFecha(String fecha, int dias) throws Exception {
+        String sql = String.format("""
+                SELECT *
+                FROM casas
+                WHERE id_casa NOT IN (
+                    SELECT e.id_casa
+                    FROM estancias e
+                    WHERE (DATE_ADD('%s', INTERVAL '%d' DAY) <= e.fecha_hasta AND '%s' >= e.fecha_desde)
+                )
+                AND fecha_desde <= '%s'
+                AND fecha_hasta >= DATE_ADD('%s', INTERVAL '%d' DAY)
+                AND tiempo_maximo >= %d
+                """, fecha, dias, fecha, fecha, fecha, dias, dias);
+
+        consultarDataBase(sql);
+        List<Casa> casas = new ArrayList<>();
+        while (resultSet.next()) {
+            casas.add(new Casa(
+                    resultSet.getInt("id_casa"),
+                    resultSet.getString("calle"),
+                    resultSet.getInt("numero"),
+                    resultSet.getString("codigo_postal"),
+                    resultSet.getString("ciudad"),
+                    resultSet.getString("pais"),
+                    resultSet.getDate("fecha_desde"),
+                    resultSet.getDate("fecha_hasta"),
+                    resultSet.getInt("tiempo_minimo"),
+                    resultSet.getInt("tiempo_maximo"),
+                    resultSet.getDouble("precio_habitacion"),
+                    resultSet.getString("tipo_vivienda")
+            ));
+        }
+        return casas;
+    }
 }
