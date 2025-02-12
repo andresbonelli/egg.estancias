@@ -15,11 +15,11 @@ public abstract class DAO {
     private final String USER = "root";
     private final String PASSWORD = "";
     private final String DATABASE = "estancias_exterior";
-    private final String DRIVER = "com.mysql.cj.jdbc.Driver";
+    //private final String DRIVER = "com.mysql.cj.jdbc.Driver";
 
-    private void conectarDataBase() throws SQLException, ClassNotFoundException {
+    protected void conectarDataBase() throws SQLException, ClassNotFoundException {
         try {
-            Class.forName(DRIVER);
+            //Class.forName(DRIVER);
             String url = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DATABASE;
             conexion = DriverManager.getConnection(url, USER, PASSWORD);
             System.out.println("Conexión exitosa a la base de datos.");

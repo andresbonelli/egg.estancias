@@ -18,7 +18,7 @@ public class Casa {
     private String codPostal;
     private String ciudad;
     private String pais;
-    private Date fechaDesde;
+    private Date fechaDesde; //disponibilidad
     private Date fechaHasta;
     private int tiempoMinimo;
     private int tiempoMaximo;
