@@ -1,6 +1,7 @@
 package com.egg.estancias.services;
 
-import java.util.InputMismatchException;
+import com.egg.estancias.entities.Estancia;
+
 import java.util.Scanner;
 
 public class MenuService {
@@ -8,6 +9,7 @@ public class MenuService {
     int opcion;
     CasaService casaService = new CasaService();
     FamiliaService familiaService = new FamiliaService();
+    EstanciaService estanciaService = new EstanciaService();
 
     public void iniciarMenu() {
         do {
@@ -18,6 +20,7 @@ public class MenuService {
                         2. Listas familias con Hotmail
                         3. Buscar casas disponibles en UK
                         4. Buscar casas disponibles por fecha y duracion
+                        5. Registrar estancia
                         0. Salir
                         Seleccione una opción:
                         """);
@@ -43,6 +46,29 @@ public class MenuService {
                     scanner.nextLine();
                     casaService.listarCasasDisponiblesPorFecha(fechaInicio, duracion).forEach(System.out::println);
                     break;
+                    case 5:
+                        System.out.println("Ingrese el ID de la casa:");
+                        int idCasa = scanner.nextInt();
+                        scanner.nextLine();
+                        System.out.println("Ingrese el ID del cliente:");
+                        int idCliente = scanner.nextInt();
+                        scanner.nextLine();
+                        System.out.println("Ingrese el nombre del huesped:");
+                        String nombreHuesped = scanner.nextLine();
+                        System.out.println("Ingrese la fecha de inicio (YYYY-MM-DD):");
+                        String fechaInicioEstancia = scanner.nextLine();
+                        System.out.println("Ingrese la fecha de fin (YYYY-MM-DD):");
+                        String fechaFinEstancia = scanner.nextLine();
+                        Estancia nuevaEstancia = new Estancia(
+                                null,
+                                idCasa,
+                                idCliente,
+                                nombreHuesped,
+                                java.sql.Date.valueOf(fechaInicioEstancia),
+                                java.sql.Date.valueOf(fechaFinEstancia)
+                        );
+                        estanciaService.registrarEstancia(nuevaEstancia);
+                        break;
                     case 0:
                         System.out.println("Saliendo del programa...");
                         break;

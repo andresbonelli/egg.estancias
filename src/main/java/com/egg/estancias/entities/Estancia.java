@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class Estancia {
-    private int idEstancia;
+    private Integer idEstancia;
     private int idCliente;
     private int idCasa;
     private String nombreHuesped;

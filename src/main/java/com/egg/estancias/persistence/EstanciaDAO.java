@@ -1,16 +1,26 @@
 package com.egg.estancias.persistence;
 
+import com.egg.estancias.entities.Cliente;
 import com.egg.estancias.entities.Estancia;
-
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EstanciaDAO extends DAO {
-    public void registrarEstancia(Estancia estancia) throws Exception {
 
+    private final ClienteDAO clienteDAO;
+
+    public EstanciaDAO() {
+        this.clienteDAO = new ClienteDAO();
+    }
+
+    public void registrarEstancia(Estancia estancia) throws Exception {
+        Cliente existingCliente = clienteDAO.buscarClientePorId(estancia.getIdCliente());
+        if(existingCliente == null) {
+            throw new Exception("El cliente no existe");
+        }
+        if(!verificarDisponibilidadEstancia(estancia)) {
+            throw new Exception("La casa no está disponible en las fechas seleccionadas");
+        }
         String sql = "INSERT INTO estancias (id_cliente, id_casa, nombre_huesped, fecha_desde, fecha_hasta)" +
                 " VALUES(" +
                 "'" + estancia.getIdCliente() + "'," +
@@ -21,7 +31,7 @@ public class EstanciaDAO extends DAO {
                 ")";
 
         insertarModificarEliminar(sql);
-
+        System.out.println("Estancia registrada con éxito");
     }
 
     public List<Estancia> listarEstancias() throws Exception {
@@ -58,7 +68,7 @@ public class EstanciaDAO extends DAO {
         return estancia;
     }
 
-    public boolean verificarDisponibilidadEstancia(Estancia e) throws Exception {
+    private boolean verificarDisponibilidadEstancia(Estancia e) throws Exception {
         String sql = String.format("""
                 SELECT COUNT(*) FROM estancias
                 WHERE id_casa = %d
